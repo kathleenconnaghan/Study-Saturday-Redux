@@ -1,4 +1,7 @@
 import React from 'react';
+import { Route, Link } from 'react-router-dom'
+import { connect } from 'react-redux';
+import { fetchSingleStudent } from "../redux/store";
 
 const avgGrade = (tests) => {
   return Math.round(
@@ -6,42 +9,30 @@ const avgGrade = (tests) => {
   );
 };
 
-const DUMMY_DATA = {
-  id: 1,
-  fullName: "Student McDummydata",
-  firstName: "Student",
-  lastName: "McDummydata",
-  email: "sm@dummydata.com",
-  tests: [
-    {
-      id: 1,
-      subject: "Computer Science",
-      grade: 45,
-    },
-    {
-      id: 6,
-      subject: "Art",
-      grade: 60,
-    },
-    {
-      id: 12,
-      subject: "ullam",
-      grade: 45,
-    },
-  ],
-};
-
 class SingleStudent extends React.Component {
   constructor(props) {
     super(props);
   }
 
+// this is getting info into the singleStudent object.
+  componentDidMount () {
+    try {
+      this.props.loadOneStudent(this.props.match.params.id)
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
+// match is given from react router gives us ^
+// in our route path it has the :id this is the params above
+
   render() {
-    const student = DUMMY_DATA;
+    const { student } = this.props;
     const hasTests = student.tests.length;
 
     return (
       <div>
+        
         <h3>Detail: {student.fullName}</h3>
         {hasTests ? (
           <React.Fragment>
@@ -75,4 +66,21 @@ class SingleStudent extends React.Component {
   }
 };
 
-export default SingleStudent;
+const mapStateToProps = (state) => {
+  console.log('MAP STATE SINGLE STUDENT')
+  return {
+    student: state.student
+  }
+}
+// singleStudent  is in the store in the initialState
+
+
+const mapDispatchToProps = (dispatch) => {
+  console.log('MAP DISPATCH SINGLE STUDENT')
+  return {
+    loadOneStudent: (id) => dispatch(fetchOneStudent(id))
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingleStudent)
